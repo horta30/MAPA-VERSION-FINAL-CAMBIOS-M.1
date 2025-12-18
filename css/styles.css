@@ -1,0 +1,1321 @@
+/* ============================================================================
+   MAPA BOSQUE ABIERTO MTB V28 - ESTILOS
+   ============================================================================
+   Mejoras V28 - UX MÓVIL OPTIMIZADA:
+   - Vista inicial: zoom out mostrando todas las locaciones
+   - Menú minimizado por defecto en móvil
+   - Botón flotante superior atractivo para abrir menú
+   - Overlay de bienvenida con invitación a explorar
+   - Click directo en puntos del mapa
+   
+   Mejoras V27:
+   - Brillo reducido en íconos de geometría de tarjetas
+   - Diamantes negros: centro negro + margen blanco
+   - KMZ en mapa con brillo intenso y visible
+   
+   Mejoras V26:
+   - Íconos de geometría visibles en tarjetas del menú (◆◆ DH, ■ XC)
+   - Título actualizado: "Mapa Bosque Abierto MTB"
+   - KMZ con brillo y relieve mejorado en el mapa
+   
+   Mejoras V23:
+   - Tarjetas expandidas (~220px altura mínima)
+   - Información completa visible sin clicks
+   - Badges visuales para especialidad (XC azul, DH negro)
+   - Grid de estadísticas separado con bordes verdes
+   - Labels claros para cada sección de información
+   - Estructura: Nombre / Club-Comuna / Especialidad / Dificultad / Stats
+   
+   Mejoras V22:
+   - Títulos en MAYÚSCULAS con tipografía unificada
+   - Íconos de dificultad: Cuadrado azul (XC) y Doble diamante (DH)
+   - Nueva línea de dificultad con íconos visuales
+   - Estructura de 4 líneas en tarjetas (Título/Métricas/Dificultad/Ubicación)
+   
+   Mejoras V21:
+   - GPX optimizado para Strava y apps móviles
+   - Headers correctos (application/gpx+xml)
+   
+   Mejoras V20:
+   - Panel lateral 15% más delgado (357px)
+   - Leyenda con fondo blanco
+   - Colores XC azul (#3b82f6) y DH negro (#18181b) en leyenda
+   - Sin botón descarga en panel lateral
+   - Botón "Descargar GPX" solo en popup del mapa
+   - Desnivel solo en panel lateral
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Colores principales */
+  --color-bg: #0a0e12;
+  --color-surface: #1a1f26;
+  --color-surface-light: #242b35;
+  --color-text: #ffffff;
+  --color-text-bright: #f8f9fa;
+  --color-text-dim: #9aa0a6;
+  --color-accent: #00e5a0;
+  --color-accent-dim: #00a374;
+  
+  /* Color para líneas en el mapa */
+  --color-trail: #00e5a0;
+  
+  /* Colores específicos para leyenda */
+  --color-xc-legend: #3b82f6;  /* Azul para XC */
+  --color-dh-legend: #18181b;  /* Negro para DH */
+  
+  /* Colores dificultad */
+  --color-verde: #22c55e;
+  --color-azul: #3b82f6;
+  --color-negro: #18181b;
+  
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Bordes */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.5);
+  
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* ============================================================================
+   RESET Y BASE
+   ============================================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+}
+
+/* ============================================================================
+   PANEL LATERAL - 15% MÁS DELGADO (357px)
+   ============================================================================ */
+
+.panel {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  width: 357px;  /* Reducido 15% desde 420px */
+  max-height: calc(100vh - 32px);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-toggle {
+  border: none;
+  background: var(--color-surface-light);
+  color: var(--color-text);
+  padding: var(--spacing-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  transition: background var(--transition-fast);
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.panel-toggle:hover {
+  background: #2d3542;
+}
+
+.panel-toggle::before {
+  content: '☰';
+  font-size: 18px;
+  color: var(--color-accent);
+}
+
+.panel.minimized .panel-inner {
+  display: none;
+}
+
+.panel-inner {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ============================================================================
+   HEADER DEL PANEL
+   ============================================================================ */
+
+.panel-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: var(--spacing-md);
+}
+
+.panel-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  background: linear-gradient(135deg, var(--color-accent) 0%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.panel-subtitle {
+  font-size: 13px;
+  color: var(--color-text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+}
+
+/* ============================================================================
+   LEYENDA - FONDO BLANCO CON COLORES XC AZUL Y DH NEGRO
+   ============================================================================ */
+
+.panel-legend {
+  background: #ffffff;  /* Fondo blanco */
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.panel-legend h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--spacing-sm);
+  color: #333333;  /* Texto oscuro */
+  font-weight: 600;
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  font-size: 13px;
+  color: #1a1a1a;  /* Texto oscuro */
+}
+
+.legend-line {
+  width: 32px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* XC - Azul */
+.legend-line.legend-xc {
+  background: var(--color-xc-legend);
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.5);
+}
+
+/* DH - Negro */
+.legend-line.legend-dh {
+  background: var(--color-dh-legend);
+  box-shadow: 0 0 6px rgba(24, 24, 27, 0.4);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00e5a0;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(0, 229, 160, 0.5);
+}
+
+/* ============================================================================
+   LISTA DE RUTAS
+   ============================================================================ */
+
+.rutas-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: var(--spacing-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent-dim) var(--color-surface-light);
+}
+
+.rutas-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rutas-list::-webkit-scrollbar-track {
+  background: var(--color-surface-light);
+  border-radius: var(--radius-full);
+}
+
+.rutas-list::-webkit-scrollbar-thumb {
+  background: var(--color-accent-dim);
+  border-radius: var(--radius-full);
+}
+
+.rutas-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* ============================================================================
+   TARJETAS DE RUTA V22 - DISEÑO EXPANDIDO CON TODA LA INFORMACIÓN
+   ============================================================================ */
+
+.ruta-card {
+  background: var(--color-surface-light);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+}
+
+.ruta-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-accent) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.ruta-card:hover {
+  border-color: rgba(0, 229, 160, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: #2a3140;
+}
+
+.ruta-card:hover::before {
+  opacity: 1;
+}
+
+.ruta-card.active {
+  border-color: var(--color-accent);
+  background: rgba(0, 229, 160, 0.08);
+  box-shadow: 0 0 0 2px rgba(0, 229, 160, 0.3);
+}
+
+.ruta-card.active::before {
+  opacity: 1;
+}
+
+/* ============================================================================
+   HEADER DE LA TARJETA EXPANDIDA
+   ============================================================================ */
+
+.ruta-card-header {
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid rgba(0, 229, 160, 0.2);
+}
+
+.ruta-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--color-text-bright);
+  text-transform: uppercase;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  margin: 0;
+}
+
+/* ============================================================================
+   BODY DE LA TARJETA CON DETALLES
+   ============================================================================ */
+
+.ruta-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.ruta-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-dim);
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-bright);
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* ============================================================================
+   BADGES DE ESPECIALIDAD Y DIFICULTAD
+   ============================================================================ */
+
+.specialty-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.specialty-xc {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--color-xc-legend);
+  border: 1px solid var(--color-xc-legend);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.specialty-dh {
+  background: rgba(24, 24, 27, 0.3);
+  color: #ffffff;
+  border: 1px solid var(--color-dh-legend);
+  box-shadow: 0 0 8px rgba(24, 24, 27, 0.5);
+}
+
+/* ============================================================================
+   ÍCONOS DE GEOMETRÍA V27 - VISIBLES EN TARJETAS
+   ============================================================================ */
+
+.specialty-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.geometry-icon {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* V27: XC - Brillo reducido (más sutil) */
+.xc-geometry {
+  color: var(--color-xc-legend);
+  text-shadow: 0 0 6px rgba(59, 130, 246, 0.4);  /* V27: Reducido de 0.8 a 0.4 */
+  filter: drop-shadow(0 1px 2px rgba(59, 130, 246, 0.3));  /* V27: Más sutil */
+}
+
+/* V27: DH - Centro NEGRO con margen BLANCO */
+.dh-geometry {
+  color: #18181b;  /* V27: Negro en el centro */
+  text-shadow: 
+    0 0 0 2px #ffffff,  /* V27: Margen blanco grueso */
+    0 0 8px rgba(255, 255, 255, 0.6);  /* V27: Brillo reducido */
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+  letter-spacing: -4px;
+  -webkit-text-stroke: 2px #ffffff;  /* V27: Stroke blanco para mejor contraste */
+}
+
+.difficulty-badge {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.difficulty-icon {
+  font-size: 20px;
+  line-height: 1;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xc-icon {
+  color: var(--color-xc-legend);
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+}
+
+.dh-icon {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  letter-spacing: -2px;
+}
+
+.difficulty-text {
+  color: var(--color-text-bright);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ============================================================================
+   GRID DE ESTADÍSTICAS
+   ============================================================================ */
+
+.ruta-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.stat-box {
+  background: rgba(0, 229, 160, 0.05);
+  border: 1px solid rgba(0, 229, 160, 0.2);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-bright);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.2;
+}
+
+/* Estilos legacy para compatibilidad */
+.ruta-header {
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ruta-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--color-text-bright);
+  text-transform: uppercase;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+.ruta-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  font-size: 13px;
+}
+
+.ruta-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  color: var(--color-text-dim);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+.info-value {
+  color: var(--color-text-bright);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ruta-difficulty {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: var(--spacing-sm) !important;
+  margin: 4px 0;
+}
+
+/* ============================================================================
+   BOTÓN FLOTANTE DE ENFOQUE
+   ============================================================================ */
+
+.focus-toggle {
+  position: absolute;
+  z-index: 999;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  padding: 14px 20px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-base);
+  font-family: 'Space Grotesk', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.focus-toggle:hover {
+  background: var(--color-surface-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 0 0 2px rgba(0, 229, 160, 0.3);
+}
+
+.focus-toggle.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+}
+
+/* ============================================================================
+   POPUPS DEL MAPA - CON BOTÓN DESCARGAR GPX
+   ============================================================================ */
+
+.maplibregl-popup-content {
+  background: var(--color-surface) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--spacing-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  min-width: 250px;
+}
+
+.maplibregl-popup-close-button {
+  color: var(--color-text) !important;
+  font-size: 20px !important;
+  padding: var(--spacing-xs) !important;
+  right: var(--spacing-sm) !important;
+  top: var(--spacing-sm) !important;
+}
+
+.popup-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+}
+
+.popup-meta {
+  font-size: 12px;
+  color: var(--color-text-dim);
+  margin-bottom: var(--spacing-md);
+}
+
+.popup-tags {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.popup-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+  font-size: 12px;
+  margin-bottom: var(--spacing-md);
+}
+
+.ruta-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  color: var(--color-text-dim);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: var(--color-text);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+/* Botón Descargar GPX en Popup */
+.btn-download-gpx {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-download-gpx:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.6);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Tags */
+.tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tag-xc {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93bbff;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.tag-dh {
+  background: rgba(24, 24, 27, 0.9);
+  color: #e5e5e5;
+  border: 1px solid #52525b;
+}
+
+.tag-azul {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93bbff;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.tag-negro {
+  background: rgba(24, 24, 27, 0.9);
+  color: #e5e5e5;
+  border: 1px solid #52525b;
+}
+
+.tag-verde {
+  background: rgba(34, 197, 94, 0.2);
+  color: #6ee7a7;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+/* ============================================================================
+   RESPONSIVE - MOBILE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .panel {
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: auto;
+    max-height: calc(100vh - 16px);
+  }
+
+  .panel-inner {
+    padding: var(--spacing-md);
+  }
+
+  .rutas-list {
+    max-height: calc(100vh - 240px);
+  }
+
+  .ruta-header h3 {
+    font-size: 14px;
+  }
+
+  .focus-toggle {
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: 12px 18px;
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .panel {
+    width: 320px;
+  }
+}
+
+/* ============================================================================
+   ANIMACIONES
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ruta-card {
+  animation: fadeIn 0.3s ease backwards;
+}
+
+.ruta-card:nth-child(1) { animation-delay: 0.05s; }
+.ruta-card:nth-child(2) { animation-delay: 0.1s; }
+.ruta-card:nth-child(3) { animation-delay: 0.15s; }
+.ruta-card:nth-child(4) { animation-delay: 0.2s; }
+.ruta-card:nth-child(5) { animation-delay: 0.25s; }
+
+/* ============================================================================
+   UTILIDADES
+   ============================================================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================================================
+   V28 - UX MÓVIL OPTIMIZADA
+   ============================================================================ */
+
+/* Botón flotante superior para abrir menú (móvil) */
+.mobile-menu-trigger {
+  position: fixed;
+  top: var(--spacing-md);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  display: none; /* Oculto por defecto, visible solo en móvil */
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--color-accent) 0%, #00a374 100%);
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 229, 160, 0.4),
+              0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-base);
+  backdrop-filter: blur(10px);
+}
+
+.mobile-menu-trigger:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.mobile-menu-trigger .menu-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.mobile-menu-trigger .menu-text {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.mobile-menu-trigger .menu-badge {
+  background: var(--color-bg);
+  color: var(--color-accent);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Panel minimizado en móvil por defecto */
+.panel.minimized-mobile {
+  transform: translateX(-100%);
+}
+
+/* Overlay de bienvenida */
+.welcome-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 14, 18, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.welcome-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome-content {
+  background: var(--color-surface);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  max-width: 320px;
+  margin: var(--spacing-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(0, 229, 160, 0.2);
+}
+
+.welcome-content h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.welcome-content p {
+  font-size: 16px;
+  color: var(--color-text-dim);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.5;
+}
+
+.welcome-close {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border: none;
+  padding: 14px 32px;
+  border-radius: var(--radius-full);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 12px rgba(0, 229, 160, 0.3);
+}
+
+.welcome-close:active {
+  transform: scale(0.95);
+}
+
+/* Media queries para móvil */
+@media (max-width: 768px) {
+  /* Mostrar botón flotante en móvil */
+  .mobile-menu-trigger {
+    display: flex;
+  }
+
+  /* V39: Panel completamente oculto por defecto en móvil */
+  .panel {
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  /* V39: Panel visible cuando NO tiene clase minimized */
+  .panel:not(.minimized):not(.minimized-mobile) {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* V39: Asegurar que minimized oculta el panel */
+  .panel.minimized,
+  .panel.minimized-mobile {
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Welcome overlay solo en móvil */
+  .welcome-overlay {
+    display: flex;
+  }
+
+  /* Ajuste de focus toggle en móvil */
+  .focus-toggle {
+    bottom: 80px;
+  }
+
+  /* V39: Ocultar botón flotante cuando panel está abierto */
+  .panel:not(.minimized):not(.minimized-mobile) ~ .mobile-menu-trigger,
+  .panel-open .mobile-menu-trigger {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+@media (min-width: 769px) {
+  /* Ocultar completamente en desktop */
+  .mobile-menu-trigger {
+    display: none !important;
+  }
+
+  .welcome-overlay {
+    display: none !important;
+  }
+
+  /* Panel visible por defecto en desktop */
+  .panel {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  
+  .panel.minimized-mobile {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* Animación del botón flotante */
+@keyframes pulse-button {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(0, 229, 160, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(0, 229, 160, 0.6),
+                0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.mobile-menu-trigger {
+  animation: pulse-button 2s ease-in-out infinite;
+}
+
+
+/* ============================================================================
+   V38 - ESTILOS DE NAVEGACIÓN GOOGLE MAPS Y WAZE
+   ============================================================================ */
+
+/* Botones de navegación en tarjetas del panel */
+.card-navigation-row {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.nav-label {
+  font-size: 12px;
+  color: var(--color-accent);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.card-nav-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.card-nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.card-nav-btn.gmaps {
+  background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+}
+
+.card-nav-btn.gmaps:hover {
+  background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+}
+
+.card-nav-btn.waze {
+  background: linear-gradient(135deg, #33ccff 0%, #00a8cc 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(51, 204, 255, 0.3);
+}
+
+.card-nav-btn.waze:hover {
+  background: linear-gradient(135deg, #00a8cc 0%, #008ba3 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(51, 204, 255, 0.4);
+}
+
+.nav-icon-mini {
+  font-size: 14px;
+}
+
+/* V38: Sección de navegación en popups */
+.popup-navigation-section {
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  background: rgba(0, 229, 160, 0.05);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 229, 160, 0.15);
+}
+
+.popup-nav-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: 0.02em;
+}
+
+/* Botones de navegación en popups */
+.navigation-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: 'Space Grotesk', sans-serif;
+  text-decoration: none;
+}
+
+.nav-btn .nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.nav-btn.google-maps-btn {
+  background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.35);
+}
+
+.nav-btn.google-maps-btn:hover {
+  background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(66, 133, 244, 0.5);
+}
+
+.nav-btn.waze-btn {
+  background: linear-gradient(135deg, #33ccff 0%, #00a8cc 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(51, 204, 255, 0.35);
+}
+
+.nav-btn.waze-btn:hover {
+  background: linear-gradient(135deg, #00a8cc 0%, #008ba3 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(51, 204, 255, 0.5);
+}
+
+/* Versión pequeña de botones */
+.navigation-buttons.nav-btn-small .nav-btn {
+  padding: 8px 12px;
+  font-size: 11px;
+  min-width: 100px;
+}
+
+.navigation-buttons.nav-btn-small .nav-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Popup V38 mejorado */
+.popup-v38 {
+  padding: var(--spacing-sm) 0;
+}
+
+.popup-v38 h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+.popup-v38 .popup-info {
+  font-size: 12px;
+  color: var(--color-text-dim);
+  margin-bottom: var(--spacing-sm);
+}
+
+.popup-v38 .popup-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--spacing-md);
+}
+
+.popup-v38 .popup-stats span {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+/* Responsive para navegación */
+@media (max-width: 768px) {
+  .navigation-buttons {
+    flex-direction: column;
+  }
+  
+  .nav-btn {
+    min-width: 100%;
+  }
+  
+  .card-nav-buttons {
+    flex-direction: row;
+  }
+  
+  .card-nav-btn {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .popup-navigation-section {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Animación de entrada para botones de navegación */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-navigation-section {
+  animation: slideUpFade 0.3s ease 0.1s backwards;
+}
+
+.card-navigation-row {
+  animation: slideUpFade 0.3s ease 0.2s backwards;
+}

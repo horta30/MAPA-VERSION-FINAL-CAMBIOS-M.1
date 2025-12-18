@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Mapa interactivo de senderos MTB en el Bosque Abierto, Chile. Descubre rutas de XC y DH con navegación GPS y descarga para Strava." />
+  <meta name="keywords" content="MTB, mountain bike, Arauco, Chile, senderos, trails, XC, DH, ciclismo, bosque abierto, GPS, Strava" />
+  <title>Mapa Bosque Abierto MTB | 16 Senderos con Navegación GPS</title>
+
+  <!-- MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+
+  <!-- JSZip para leer archivos KMZ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <div id="app">
+    <!-- Mapa -->
+    <div id="map" role="application" aria-label="Mapa interactivo de senderos MTB"></div>
+
+    <!-- Botón flotante móvil -->
+    <button 
+      id="mobile-menu-trigger" 
+      class="mobile-menu-trigger"
+      aria-label="Abrir menú de rutas"
+    >
+      <span class="menu-icon">☰</span>
+      <span class="menu-text">Ver Rutas MTB</span>
+      <span class="menu-badge">16</span>
+    </button>
+
+    <!-- Panel Lateral -->
+    <aside id="panel" class="panel minimized" role="complementary" aria-label="Panel de información de rutas">
+      <button 
+        id="panel-toggle" 
+        class="panel-toggle" 
+        aria-label="Minimizar o expandir panel"
+        aria-expanded="false"
+      >
+        Rutas MTB
+      </button>
+
+      <div class="panel-inner">
+        <!-- Header -->
+        <header class="panel-header">
+          <h1>Mapa Bosque Abierto MTB</h1>
+          <p id="ruta-count" class="panel-subtitle" role="status" aria-live="polite">
+            Cargando rutas...
+          </p>
+        </header>
+
+        <!-- Leyenda -->
+        <section class="panel-legend" aria-label="Leyenda del mapa">
+          <h2>REFERENCIA</h2>
+          <div class="legend-items">
+            <div class="legend-item">
+              <span class="legend-line legend-xc" aria-hidden="true"></span>
+              <span>XC - Cross Country / Endurance</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-line legend-dh" aria-hidden="true"></span>
+              <span>DH - Downhill / Descenso</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" aria-hidden="true"></span>
+              <span>Punto de inicio · Click para navegar</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Lista de Rutas -->
+        <section 
+          id="rutas-list" 
+          class="rutas-list" 
+          role="list" 
+          aria-label="Lista de rutas disponibles"
+        >
+        </section>
+      </div>
+    </aside>
+
+    <!-- Botón Flotante de Enfoque -->
+    <button 
+      id="focus-toggle" 
+      class="focus-toggle hidden" 
+      aria-label="Alternar vista de ruta enfocada"
+    >
+      <span aria-hidden="true">🔍</span>
+      Ver solo esta ruta
+    </button>
+
+    <!-- Welcome overlay móvil -->
+    <div id="welcome-overlay" class="welcome-overlay">
+      <div class="welcome-content">
+        <h2>🚵 Explora el Bosque Abierto</h2>
+        <p>Toca los puntos verdes para ver cada ruta y navegar hasta ella con Google Maps o Waze</p>
+        <button id="welcome-close" class="welcome-close">Comenzar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data/trails.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

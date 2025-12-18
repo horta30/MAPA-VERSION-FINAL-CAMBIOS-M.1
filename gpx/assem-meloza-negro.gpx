@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Bosque Abierto MTB - Guardianes del Bosque"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>Meloza - ASSEM Colbún</name>
+    <desc>Ruta MTB Bosque Abierto - ARAUCO Renovables</desc>
+    <author>
+      <name>Guardianes del Bosque MTB</name>
+    </author>
+    <time>2024-01-01T10:00:00Z</time>
+  </metadata>
+  <trk>
+    <name>Meloza - ASSEM Colbún</name>
+    <type>cycling</type>
+    <trkseg>
+      <trkpt lat="-35.71533203" lon="-71.28973014">
+        <ele>0</ele>
+        <time>2024-01-01T10:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
